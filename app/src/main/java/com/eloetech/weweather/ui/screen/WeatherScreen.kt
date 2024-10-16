@@ -5,8 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.size
@@ -38,12 +40,13 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.eloetech.weweather.R
 import com.eloetech.weweather.model.DailyForecast
-import com.eloetech.weweather.model.Forecast
 import com.eloetech.weweather.model.Location
 import com.eloetech.weweather.model.db.LocationEntity
 import com.eloetech.weweather.viewmodel.WeatherViewModel
+import kotlin.math.roundToInt
 
 @Composable
 fun WeatherScreen(viewModel: WeatherViewModel) {
@@ -52,10 +55,11 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
     val isLoading = viewModel.isLoading
 
     Column {
-
         SearchComponent { address -> viewModel.loadWeatherFirstMatch(address) }
+
         location?.let {
             WeatherDetails(location)
+            Spacer(Modifier.height(8.dp))
             ForecastComponent(location.daily)
         }
 
@@ -102,20 +106,25 @@ fun SearchComponent(onSearch: (String) -> Unit) {
 @Composable
 fun WeatherDetails(location: Location) {
     Column {
-        Text(text = "Location: ${location.name}")
+        Text(text = location.name, fontSize = 24.sp)
+        Spacer(Modifier.height(4.dp))
         val imageModifier = Modifier
             .size(40.dp)
-        Row {
-            Image(painter = painterResource(R.drawable.thermometer_1843544), null, modifier = imageModifier)
-            Text(text = "${location.current.temperature}°C")
-        }
-        Row {
-            Image(painter = painterResource(R.drawable.weather_16279006), null, modifier = imageModifier)
-            Text(text = "${location.current.windSpeed} m/s")
-        }
-        Row {
-            Image(painter = painterResource(R.drawable.humidity_9468938), null, modifier = imageModifier)
-            Text(text = "${location.current.humidity}%")
+        Row(horizontalArrangement = Arrangement.SpaceBetween) {
+            Row {
+                Image(painter = painterResource(R.drawable.thermometer_1843544), null, modifier = imageModifier)
+                Text(text = "${location.current.temperature}°C")
+            }
+            Spacer(Modifier.width(8.dp))
+            Row {
+                Image(painter = painterResource(R.drawable.weather_16279006), null, modifier = imageModifier)
+                Text(text = "${location.current.windSpeed} m/s")
+            }
+            Spacer(Modifier.width(8.dp))
+            Row {
+                Image(painter = painterResource(R.drawable.humidity_9468938), null, modifier = imageModifier)
+                Text(text = "${location.current.humidity}%")
+            }
         }
     }
 }
@@ -124,7 +133,7 @@ fun WeatherDetails(location: Location) {
 fun ForecastComponent(dailyForecasts: List<DailyForecast>) {
     val weight = 0.2f
     Column {
-        Text(text = "Forecast 10 days")
+        Text(text = "Forecast 10 days", fontSize = 18.sp)
         Row {
             Text("Date", Modifier.weight(weight))
             Text("Max", Modifier.weight(weight))
@@ -134,11 +143,11 @@ fun ForecastComponent(dailyForecasts: List<DailyForecast>) {
         }
         for (dailyForecast in dailyForecasts) {
             Row {
-                Text(dailyForecast.time, Modifier.weight(weight))
-                Text("${dailyForecast.temperatureMax}", Modifier.weight(weight))
-                Text("${dailyForecast.temperatureMin}", Modifier.weight(weight))
-                Text(dailyForecast.sunrise, Modifier.weight(weight))
-                Text(dailyForecast.sunset, Modifier.weight(weight))
+                Text(dailyForecast.formattedDateString(), Modifier.weight(weight))
+                Text("${dailyForecast.temperatureMax.roundToInt()}", Modifier.weight(weight))
+                Text("${dailyForecast.temperatureMin.roundToInt()}", Modifier.weight(weight))
+                Text(dailyForecast.formattedSunrise(), Modifier.weight(weight))
+                Text(dailyForecast.formattedSunset(), Modifier.weight(weight))
             }
         }
     }

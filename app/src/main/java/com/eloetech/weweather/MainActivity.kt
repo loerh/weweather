@@ -7,12 +7,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import com.eloetech.weweather.ui.screen.WeatherScreen
 import com.eloetech.weweather.ui.theme.WeweatherTheme
 import com.eloetech.weweather.viewmodel.WeatherViewModel
@@ -29,15 +32,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             WeweatherTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
-                    WeatherScreen(viewModel = weatherViewModel)
-//                    Column {
-//                        Greeting(
-//                            name = "Android",
-//                            modifier = Modifier.padding(innerPadding)
-//                        )
-//
-//                    }
+                    Column(Modifier.padding(innerPadding)) {
+                        Text(
+                            text ="WeWeather",
+                            textAlign = TextAlign.Center,
+                            fontSize = 28.sp,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        WeatherScreen(viewModel = weatherViewModel)
+                    }
                 }
             }
         }
