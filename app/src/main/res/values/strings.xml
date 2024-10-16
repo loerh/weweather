@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">weweather</string>
+    <string name="thermometer_icon">Thermometer</string>
 </resources>

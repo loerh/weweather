@@ -19,7 +19,8 @@ class WeatherRepository @Inject constructor(
         } catch (e: IOException) {
             println(e.localizedMessage)
             return WeatherResponse(
-                current = TODO()
+                current = TODO(),
+                daily = TODO()
             )
         }
     }

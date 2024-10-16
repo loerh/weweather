@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eloetech.weweather.model.DailyForecast
 import com.eloetech.weweather.model.Forecast
 import com.eloetech.weweather.model.GeocodeResponsePlace
+import com.eloetech.weweather.model.Location
 import com.eloetech.weweather.model.WeatherResponseCurrent
 import com.eloetech.weweather.model.db.LocationEntity
 import com.eloetech.weweather.repository.GeocodeRepository
@@ -21,32 +23,51 @@ class WeatherViewModel @Inject constructor(
     private val geocodeRepository: GeocodeRepository
 ) : ViewModel() {
 
-//    var currentWeather by mutableStateOf<WeatherResponse?>(null)
-//        private set
-
-    var current by mutableStateOf<Forecast?>(null)
-    var forecast by mutableStateOf<List<Forecast>>(emptyList())
+    var currentLocation by mutableStateOf<Location?>(null)
         private set
     var favoriteLocations by mutableStateOf<List<LocationEntity>>(emptyList())
         private set
+    var isLoading by mutableStateOf<Boolean>(false)
+        private set
 
     fun loadWeatherFirstMatch(address: String) {
+        isLoading = true
         viewModelScope.launch {
-//            val place = searchPlace(address)
-//            val responseCurrent = getWeather(place.lat, place.lon)
-
             val geoResponse = geocodeRepository.getCoordinates(address)
             val first = geoResponse.first()
-            val response = weatherRepository.getForecast(first.lat, first.lon)
-            val responseCurrent = response.current
+            val weatherResponse = weatherRepository.getForecast(first.lat, first.lon)
+            val responseCurrent = weatherResponse.current
 
-            current = Forecast(
+            val currentForecast = Forecast(
                 date = responseCurrent.time,
                 temperature = responseCurrent.temperature_2m,
                 condition = "$responseCurrent.weather_code",
                 windSpeed = responseCurrent.wind_speed_10m.toInt(),
                 humidity = responseCurrent.relative_humidity_2m.toDouble()
             )
+
+            val dailyForecasts = emptyList<DailyForecast>().toMutableList()
+
+            weatherResponse.daily.time.forEachIndexed { index, element ->
+                val dailyForecast = DailyForecast(
+                    time = element,
+                    temperatureMax = weatherResponse.daily.temperature_2m_max[index],
+                    temperatureMin = weatherResponse.daily.temperature_2m_min[index],
+                    sunrise = weatherResponse.daily.sunrise[index],
+                    sunset = weatherResponse.daily.sunset[index],
+                    precipitation = weatherResponse.daily.precipitation_sum[index],
+                    precipitationProbability = weatherResponse.daily.precipitation_probability_max[index]
+                )
+                dailyForecasts += dailyForecast
+            }
+
+            currentLocation = Location(
+                name = first.display_name,
+                current = currentForecast,
+                daily = dailyForecasts
+            )
+
+            isLoading = false
         }
     }
 
