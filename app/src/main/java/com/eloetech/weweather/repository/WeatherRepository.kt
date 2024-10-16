@@ -6,18 +6,22 @@ import com.eloetech.weweather.model.Forecast
 import com.eloetech.weweather.model.WeatherResponse
 import com.eloetech.weweather.model.db.LocationEntity
 import com.eloetech.weweather.model.db.WeatherDao
+import okio.IOException
 import javax.inject.Inject
 
 class WeatherRepository @Inject constructor(
     private val weatherApi: WeatherApi,
     private val weatherDao: WeatherDao // Room DAO
 ) {
-    suspend fun getCurrentWeather(location: String): WeatherResponse {
-        return weatherApi.getCurrentWeather(location, BuildConfig.API_KEY)
-    }
-
-    suspend fun getWeatherForecast(location: String): List<Forecast> {
-        return weatherApi.getWeatherForecast(location, BuildConfig.API_KEY)
+    suspend fun getForecast(latitude: Double, longitude: Double): WeatherResponse {
+        return try {
+            weatherApi.getForecast(latitude, longitude)
+        } catch (e: IOException) {
+            println(e.localizedMessage)
+            return WeatherResponse(
+                current = TODO()
+            )
+        }
     }
 
     // Favorite Locations methods using Room DB

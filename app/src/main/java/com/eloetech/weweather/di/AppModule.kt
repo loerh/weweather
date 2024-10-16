@@ -2,6 +2,7 @@ package com.eloetech.weweather.di
 
 import android.content.Context
 import androidx.room.Room
+import com.eloetech.weweather.api.GeocodeApi
 import dagger.Module
 import dagger.Provides
 import com.eloetech.weweather.api.WeatherApi
@@ -20,10 +21,19 @@ object AppModule {
     @Provides
     fun provideWeatherApi(): WeatherApi {
         return Retrofit.Builder()
-            .baseUrl("https://api.openweathermap.org/data/2.5/")
+            .baseUrl("https://api.open-meteo.com/v1/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(WeatherApi::class.java)
+    }
+
+    @Provides
+    fun provideGeocodeApi(): GeocodeApi {
+        return Retrofit.Builder()
+            .baseUrl("https://geocode.maps.co/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(GeocodeApi::class.java)
     }
 
     @Provides

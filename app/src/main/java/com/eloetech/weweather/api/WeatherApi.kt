@@ -6,17 +6,12 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface WeatherApi {
-    @GET("weather")
-    suspend fun getCurrentWeather(
-        @Query("q") location: String,
-        @Query("appid") apiKey: String,
-        @Query("units") units: String = "metric"
-    ): WeatherResponse
-
     @GET("forecast")
-    suspend fun getWeatherForecast(
-        @Query("q") location: String,
-        @Query("appid") apiKey: String,
-        @Query("units") units: String = "metric"
-    ): List<Forecast>
+    suspend fun getForecast(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("current") current: String = "temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,cloud_cover",
+        @Query("daily") daily: String = "weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum,precipitation_probability_max",
+        @Query("forecast_days") forecastDays: Int = 10
+    ): WeatherResponse
 }

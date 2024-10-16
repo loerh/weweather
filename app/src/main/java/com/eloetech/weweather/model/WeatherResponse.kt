@@ -1,9 +1,14 @@
 package com.eloetech.weweather.model
 
 data class WeatherResponse(
-    val location: String,
-    val temperature: Double,
-    val windSpeed: Double,
-    val humidity: Int,
-    val forecast: List<Forecast>
+    val current: WeatherResponseCurrent
+)
+
+data class WeatherResponseCurrent (
+    val time: String,
+    val interval: Int,
+    val temperature_2m: Double,
+    val relative_humidity_2m: Int,
+    val weather_code: Int,
+    val wind_speed_10m: Double
 )

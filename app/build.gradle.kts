@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.dagger.hilt.android")
     kotlin("kapt")
 }
 
@@ -19,9 +20,17 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "API_KEY", "\"${project.properties["WEATHER_API_KEY"]}\"")
+        buildConfigField("String", "GEOCODE_API_KEY", "\"${project.properties["GEOCODE_MAPS_API_KEY"]}\"")
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = false
+
+            kotlinOptions {
+                freeCompilerArgs = listOf("-Xdebug")
+            }
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -81,4 +90,9 @@ dependencies {
     // Retrofit for network requests
     implementation("com.squareup.retrofit2:retrofit:2.10.0")
     implementation("com.squareup.retrofit2:converter-gson:2.10.0")
+
+}
+
+kapt {
+    correctErrorTypes = true
 }
