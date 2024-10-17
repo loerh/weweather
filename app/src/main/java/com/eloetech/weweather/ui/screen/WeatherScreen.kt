@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
@@ -47,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -78,8 +80,9 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
             SearchComponent { address -> viewModel.loadWeatherFirstMatch(address) }
 
             location?.let {
+                Spacer(Modifier.height(20.dp))
                 CurrentWeather(location)
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(10.dp))
                 CurrentWeatherActions(
                     isFavorite = viewModel.isFavorite(location.name),
                     onDetailsSelection = { showPopup = true },
@@ -88,12 +91,19 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
             }
 
             if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.width(64.dp),
-                    color = MaterialTheme.colorScheme.secondary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant)
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.width(64.dp),
+                        color = MaterialTheme.colorScheme.secondary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                }
             }
-
+            Spacer(Modifier.height(20.dp))
             FavoriteLocations(
                 favoriteLocations = favoriteLocations,
                 onLocationSelected = { locationEntity -> viewModel.loadWeatherFirstMatch(locationEntity.locationName) }
@@ -103,8 +113,8 @@ fun WeatherScreen(viewModel: WeatherViewModel) {
 
     location?.let {
         PopupBox(
-            popupWidth = screenWidth.value*0.8f,
-            popupHeight = screenHeight.value*0.8f,
+            popupWidth = screenWidth.value*0.85f,
+            popupHeight = 500f,
             showPopup = showPopup,
             onClickOutside = { showPopup = false },
         ) {
@@ -144,23 +154,30 @@ fun SearchComponent(onSearch: (String) -> Unit) {
 @Composable
 fun CurrentWeather(location: Location) {
     Column {
-        Text(text = location.name, fontSize = 24.sp, textAlign = TextAlign.Center)
-        Spacer(Modifier.height(4.dp))
+        Text(
+            text = location.name,
+            style = MaterialTheme.typography.displaySmall,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(10.dp))
         val imageModifier = Modifier
             .size(30.dp)
         Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(painter = painterResource(R.drawable.thermometer_1843544), null, modifier = imageModifier)
+                Spacer(Modifier.width(4.dp))
                 Text(text = "${location.current.temperature.roundToInt()}°C")
             }
             Spacer(Modifier.width(12.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(painter = painterResource(R.drawable.weather_16279006), null, modifier = imageModifier)
+                Spacer(Modifier.width(4.dp))
                 Text(text = "${location.current.windSpeed} m/s")
             }
             Spacer(Modifier.width(12.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(painter = painterResource(R.drawable.humidity_9468938), null, modifier = imageModifier)
+                Spacer(Modifier.width(4.dp))
                 Text(text = "${location.current.humidity.roundToInt()}%")
             }
         }
@@ -188,24 +205,32 @@ fun CurrentWeatherActions(isFavorite: Boolean,
 
 @Composable
 fun ForecastComponent(dailyForecasts: List<DailyForecast>) {
-    val weight = 0.2f
-    Column {
-        Text(text = "Forecast 10 days", fontSize = 18.sp)
+    val dateWeight = 0.3f
+    val sunWeight = 0.2f
+    val tempWeight = 0.15f
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.Top
+    ) {
+        Text(text = "Forecast 10 days", style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(8.dp))
         Row {
-            Text("Date", Modifier.weight(weight))
-            Text("Max", Modifier.weight(weight))
-            Text("Min", Modifier.weight(weight))
-            Text("Sunrise", Modifier.weight(weight))
-            Text("Sunset", Modifier.weight(weight))
+            Text("Date", Modifier.weight(dateWeight), fontWeight = FontWeight.Medium)
+            Text("Max", Modifier.weight(tempWeight), fontWeight = FontWeight.Medium)
+            Text("Min", Modifier.weight(tempWeight), fontWeight = FontWeight.Medium)
+            Text("Sunrise", Modifier.weight(sunWeight), fontWeight = FontWeight.Medium)
+            Text("Sunset", Modifier.weight(sunWeight), fontWeight = FontWeight.Medium)
         }
+        Spacer(Modifier.height(4.dp))
         for (dailyForecast in dailyForecasts) {
             Row {
-                Text(dailyForecast.formattedDateString(), Modifier.weight(weight))
-                Text("${dailyForecast.temperatureMax.roundToInt()}", Modifier.weight(weight))
-                Text("${dailyForecast.temperatureMin.roundToInt()}", Modifier.weight(weight))
-                Text(dailyForecast.formattedSunrise(), Modifier.weight(weight))
-                Text(dailyForecast.formattedSunset(), Modifier.weight(weight))
+                Text(dailyForecast.formattedDateString(), Modifier.weight(dateWeight))
+                Text("${dailyForecast.temperatureMax.roundToInt()}", Modifier.weight(tempWeight))
+                Text("${dailyForecast.temperatureMin.roundToInt()}", Modifier.weight(tempWeight))
+                Text(dailyForecast.formattedSunrise(), Modifier.weight(sunWeight))
+                Text(dailyForecast.formattedSunset(), Modifier.weight(sunWeight))
             }
+            Spacer(Modifier.height(2.dp))
         }
     }
 
@@ -216,6 +241,7 @@ fun FavoriteLocations(
     favoriteLocations: List<LocationEntity>, // List of favorite locations
     onLocationSelected: (LocationEntity) -> Unit // Callback when a location is tapped
 ) {
+    Text("Saved Locations", style = MaterialTheme.typography.titleMedium)
     LazyColumn {
         items(favoriteLocations) { location ->
             LocationItem(
@@ -240,20 +266,11 @@ fun LocationItem(location: LocationEntity, onLocationSelected: (LocationEntity) 
             defaultElevation = 4.dp
         )
     ) {
-        Row(
+        Text(
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = location.locationName,
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = "Favorite"
-            )
-        }
+            text = location.locationName,
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }

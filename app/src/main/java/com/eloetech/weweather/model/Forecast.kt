@@ -1,8 +1,10 @@
 package com.eloetech.weweather.model
 
+import androidx.compose.ui.text.capitalize
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 data class Forecast(
     val date: String,
@@ -24,7 +26,7 @@ data class DailyForecast(
     fun formattedDateString(): String {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val date = LocalDate.parse(time , formatter)
-        return "${date.month.toString().take(3)}${date.dayOfMonth}"
+        return "${date.month.toString().capitalize(Locale.ROOT).take(3)} ${date.dayOfMonth}"
     }
 
     fun formattedSunrise(): String {

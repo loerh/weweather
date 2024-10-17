@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +37,7 @@ class MainActivity : ComponentActivity() {
                         Text(
                             text ="WeWeather",
                             textAlign = TextAlign.Center,
-                            fontSize = 28.sp,
+                            style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.fillMaxWidth()
                         )
                         WeatherScreen(viewModel = weatherViewModel)
@@ -44,21 +45,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    WeweatherTheme {
-        Greeting("Android")
     }
 }
