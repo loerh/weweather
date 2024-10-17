@@ -7,9 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eloetech.weweather.model.DailyForecast
 import com.eloetech.weweather.model.Forecast
-import com.eloetech.weweather.model.GeocodeResponsePlace
 import com.eloetech.weweather.model.Location
-import com.eloetech.weweather.model.WeatherResponseCurrent
 import com.eloetech.weweather.model.db.LocationEntity
 import com.eloetech.weweather.repository.GeocodeRepository
 import com.eloetech.weweather.repository.WeatherRepository
@@ -79,7 +77,7 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    private fun loadFavorites() {
+    fun loadFavorites() {
         viewModelScope.launch {
             favoriteLocations = weatherRepository.getFavoriteLocations()
         }
@@ -109,14 +107,14 @@ class WeatherViewModel @Inject constructor(
             .contains(locationName)
     }
 
-    private fun addToFavorites(location: LocationEntity) {
+    fun addToFavorites(location: LocationEntity) {
         viewModelScope.launch {
             weatherRepository.addLocationToFavorites(location)
             loadFavorites()
         }
     }
 
-    private fun removeFromFavorites(location: LocationEntity) {
+    fun removeFromFavorites(location: LocationEntity) {
         viewModelScope.launch {
             weatherRepository.removeLocationFromFavorites(location)
             loadFavorites()
