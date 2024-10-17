@@ -30,6 +30,10 @@ class WeatherRepository @Inject constructor(
         return weatherDao.getAllFavorites()
     }
 
+    suspend fun getLocationEntity(name: String): LocationEntity? {
+        return weatherDao.getFavorite(name)
+    }
+
     suspend fun addLocationToFavorites(locationEntity: LocationEntity) {
         weatherDao.insert(locationEntity)
     }

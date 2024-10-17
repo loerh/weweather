@@ -11,6 +11,9 @@ interface WeatherDao {
     @Query("SELECT * FROM locations")
     suspend fun getAllFavorites(): List<LocationEntity>
 
+    @Query("SELECT * FROM locations WHERE location_name = :locationName")
+    suspend fun getFavorite(locationName: String): LocationEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(locationEntity: LocationEntity)
 

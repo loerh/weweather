@@ -27,8 +27,14 @@ class WeatherViewModel @Inject constructor(
         private set
     var favoriteLocations by mutableStateOf<List<LocationEntity>>(emptyList())
         private set
-    var isLoading by mutableStateOf<Boolean>(false)
+    var isLoading by mutableStateOf(false)
         private set
+
+    init {
+        viewModelScope.launch {
+            loadFavorites()
+        }
+    }
 
     fun loadWeatherFirstMatch(address: String) {
         isLoading = true
@@ -63,6 +69,8 @@ class WeatherViewModel @Inject constructor(
 
             currentLocation = Location(
                 name = first.display_name,
+                latitude = first.lat,
+                longitude = first.lon,
                 current = currentForecast,
                 daily = dailyForecasts
             )
@@ -101,14 +109,38 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    fun addToFavorites(location: LocationEntity) {
+    fun onFavoriteSelection(location: Location) {
+        viewModelScope.launch {
+            var favorite: LocationEntity? = null
+            for (favoriteLocation in favoriteLocations) {
+                if (favoriteLocation.locationName == location.name) {
+                    favorite = favoriteLocation
+                    break
+                }
+            }
+
+            if (favorite != null) {
+                removeFromFavorites(favorite)
+            } else {
+                addToFavorites(LocationEntity(location.name, location.latitude, location.longitude))
+            }
+        }
+    }
+
+    fun isFavorite(locationName: String) : Boolean {
+        return favoriteLocations
+            .map { locationEntity -> locationEntity.locationName }
+            .contains(locationName)
+    }
+
+    private fun addToFavorites(location: LocationEntity) {
         viewModelScope.launch {
             weatherRepository.addLocationToFavorites(location)
             loadFavorites()
         }
     }
 
-    fun removeFromFavorites(location: LocationEntity) {
+    private fun removeFromFavorites(location: LocationEntity) {
         viewModelScope.launch {
             weatherRepository.removeLocationFromFavorites(location)
             loadFavorites()
