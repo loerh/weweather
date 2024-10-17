@@ -79,30 +79,6 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getWeather(latitude: Double, longitude: Double): WeatherResponseCurrent {
-
-//        viewModelScope.launch {
-//            currentWeather = repository.getCurrentWeather(location)
-//            forecast = repository.getWeatherForecast(location)
-
-            val response = weatherRepository.getForecast(latitude, longitude)
-        return response.current
-//            current = Forecast(
-//                date = response.current.time,
-//                temperature = response.current.temperature_2m,
-//                condition = "$response.current.weather_code",
-//                windSpeed = response.current.wind_speed_10m.toInt(),
-//                humidity = response.current.relative_humidity_2m.toDouble()
-//            )
-//        }
-    }
-
-    private suspend fun searchPlace(name: String): GeocodeResponsePlace {
-        val response = geocodeRepository.getCoordinates(name)
-        val firstMatch = response.first()
-        return firstMatch
-    }
-
     private fun loadFavorites() {
         viewModelScope.launch {
             favoriteLocations = weatherRepository.getFavoriteLocations()
